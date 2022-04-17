@@ -68,5 +68,8 @@ dependencies {
 
     // https://composedestinations.rafaelcosta.xyz/
     implementation("io.github.raamcosta.compose-destinations:core:1.4.4-beta")
+
+    implementation("io.insert-koin:koin-android:3.1.6")
+
     ksp("io.github.raamcosta.compose-destinations:ksp:1.4.4-beta")
 }
