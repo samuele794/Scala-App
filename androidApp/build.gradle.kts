@@ -1,8 +1,17 @@
+import java.util.*
+
 plugins {
     id("com.android.application")
     kotlin("android")
     id("com.google.devtools.ksp") version "1.6.10-1.0.4"
+    id("kotlin-parcelize")
 }
+
+apply(plugin = "com.google.gms.google-services")
+
+
+val localProperties = Properties()
+localProperties.load(project.rootProject.file("local.properties").inputStream())
 
 android {
     compileSdk = 32
@@ -14,6 +23,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "GOOGLE_AUTH_APIKEY",
+            "\"${localProperties["auth.google.apikey"]}\""
+        )
     }
 
     applicationVariants.all {
@@ -50,6 +65,18 @@ android {
     }
 }
 
+
+buildscript {
+    repositories {
+        google()
+
+    }
+
+    dependencies {
+        classpath("com.google.gms:google-services:4.3.10")
+    }
+}
+
 dependencies {
     implementation(project(":shared"))
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
@@ -70,6 +97,22 @@ dependencies {
     implementation("io.github.raamcosta.compose-destinations:core:1.4.4-beta")
 
     implementation("io.insert-koin:koin-android:3.1.6")
+    implementation("io.insert-koin:koin-androidx-compose:3.1.6")
 
+    implementation(platform("com.google.firebase:firebase-bom:29.3.1"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
+
+
+    // Declare the dependency for the Firebase Authentication library
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+    // Also declare the dependency for the Google Play services library and specify its version
+    implementation("com.google.android.gms:play-services-auth:20.1.0")
+
+
+    //implementation("dev.gitlive:firebase-auth-android:1.5.0")
+
+    implementation("io.github.raamcosta.compose-destinations:core:1.4.4-beta")
     ksp("io.github.raamcosta.compose-destinations:ksp:1.4.4-beta")
 }

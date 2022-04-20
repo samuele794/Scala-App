@@ -33,16 +33,16 @@ kotlin {
                 implementation("io.insert-koin:koin-core:3.1.6")
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
 
-                implementation("co.touchlab:kermit:1.1.0")
+                api("co.touchlab:kermit:1.1.0")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 
                 // https://github.com/GitLiveApp/firebase-kotlin-sdk
                 implementation("dev.gitlive:firebase-firestore:1.5.0")
                 implementation("dev.gitlive:firebase-common:1.5.0")
-                implementation("dev.gitlive:firebase-auth:1.5.0")
+                api("dev.gitlive:firebase-auth:1.5.0")
 
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
             }
         }
         val commonTest by getting {
@@ -54,6 +54,19 @@ kotlin {
             dependencies {
                 implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.1")
                 implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
+
+                implementation(project.dependencies.platform("com.google.firebase:firebase-bom:29.3.1"))
+
+                // Declare the dependency for the Firebase Authentication library
+                // When using the BoM, you don't specify versions in Firebase library dependencies
+                implementation("com.google.firebase:firebase-auth-ktx")
+
+                // Also declare the dependency for the Google Play services library and specify its version
+                implementation("com.google.android.gms:play-services-auth:20.1.0")
+
+                // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-play-services
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.1")
+
             }
         }
         val androidTest by getting
