@@ -29,6 +29,18 @@ android {
             "GOOGLE_AUTH_APIKEY",
             "\"${localProperties["auth.google.apikey"]}\""
         )
+
+        buildConfigField(
+            "String",
+            "EMAIL_TEST_AN",
+            "\"${localProperties["auth.email"]}\""
+        )
+
+        buildConfigField(
+            "String",
+            "PASSWORD_TEST_AN",
+            "\"${localProperties["auth.password"]}\""
+        )
     }
 
     applicationVariants.all {
