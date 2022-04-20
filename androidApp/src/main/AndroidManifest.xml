@@ -6,6 +6,7 @@
         android:name=".ScalaApplication"
         android:allowBackup="false"
         android:supportsRtl="true"
+        android:label="@string/app_name"
         android:theme="@style/Theme.MyApplication">
         <activity
             android:name=".MainActivity"
