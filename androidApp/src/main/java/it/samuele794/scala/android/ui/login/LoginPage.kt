@@ -47,7 +47,7 @@ fun LoginPage(
 
     //TODO Need Check user exist
     if (isLogged != null) {
-        navigator.navigate(PersonalDataPageDestination)
+        navigator.navigate(PersonalDataPageDestination.route)
     }
 
     val activityResult =

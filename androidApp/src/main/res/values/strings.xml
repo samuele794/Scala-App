@@ -5,4 +5,11 @@
 
     <string name="user_name">Name</string>
     <string name="user_surname">Surname</string>
+    <string name="next">Next</string>
+
+    <string name="height">Height</string>
+    <string name="weight">Weight</string>
+
+    <string name="cm">cm</string>
+    <string name="kg">kg</string>
 </resources>

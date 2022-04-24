@@ -105,9 +105,6 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.1.1")
     debugImplementation("androidx.compose.ui:ui-tooling:1.1.1")
 
-    // https://composedestinations.rafaelcosta.xyz/
-    implementation("io.github.raamcosta.compose-destinations:core:1.4.4-beta")
-
     implementation("io.insert-koin:koin-android:3.1.6")
     implementation("io.insert-koin:koin-androidx-compose:3.1.6")
 
@@ -122,9 +119,7 @@ dependencies {
     // Also declare the dependency for the Google Play services library and specify its version
     implementation("com.google.android.gms:play-services-auth:20.1.0")
 
-
-    //implementation("dev.gitlive:firebase-auth-android:1.5.0")
-
-    implementation("io.github.raamcosta.compose-destinations:core:1.4.4-beta")
-    ksp("io.github.raamcosta.compose-destinations:ksp:1.4.4-beta")
+    // https://composedestinations.rafaelcosta.xyz/
+    implementation("io.github.raamcosta.compose-destinations:core:1.5.1-beta")
+    ksp("io.github.raamcosta.compose-destinations:ksp:1.5.1-beta")
 }
