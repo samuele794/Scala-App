@@ -5,14 +5,15 @@ import org.koin.core.Koin
 import org.koin.core.KoinApplication
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
-import platform.Foundation.NSUserDefaults
 
 fun initKoinIos(
-    userDefaults: NSUserDefaults,
 //    appInfo: AppInfo,
     doOnStartup: () -> Unit
 ): KoinApplication = initKoin(
-    module {
+    koinApplication = {
+
+    },
+    appModule = module {
 //        single<Settings> { AppleSettings(userDefaults) }
 //        single { appInfo }
         single { doOnStartup }
