@@ -24,30 +24,44 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.common.SignInButton
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.popUpTo
 import it.samuele794.scala.android.BuildConfig
 import it.samuele794.scala.android.R
+import it.samuele794.scala.android.ui.destinations.LoginPageDestination
 import it.samuele794.scala.android.ui.destinations.PersonalDataPageDestination
 import it.samuele794.scala.android.ui.theme.ScalaAppTheme
 import it.samuele794.scala.viewmodel.auth.AuthViewModel
 import it.samuele794.scala.viewmodel.auth.NativeAuth
+import it.samuele794.scala.viewmodel.login.LoginViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
-import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.viewModel
+import org.koin.core.parameter.parametersOf
 
 @Destination
 @Composable
 fun LoginPage(
     navigator: DestinationsNavigator
 ) {
-    val authViewModel = getViewModel<AuthViewModel>()
-    val nativeAuth = get<NativeAuth>()
     val coroutineScope = rememberCoroutineScope()
 
-    val isLogged by authViewModel.isLoggedFlow.collectAsState(initial = null)
 
-    //TODO Need Check user exist
-    if (isLogged != null) {
-        navigator.navigate(PersonalDataPageDestination.route)
+    val authViewModel by viewModel<AuthViewModel>()
+    val loginViewModel by viewModel<LoginViewModel> { parametersOf(authViewModel.isLoggedFlow) }
+    val nativeAuth = get<NativeAuth>()
+
+    val navDirection by loginViewModel.navDirection.collectAsState()
+    when (navDirection) {
+        is LoginViewModel.NavDirection.Logged -> {
+            //TODO Navigate to Logged
+        }
+
+        is LoginViewModel.NavDirection.OnBoarding -> {
+            navigator.navigate(PersonalDataPageDestination) {
+                popUpTo(LoginPageDestination) { inclusive = true }
+            }
+        }
+        else -> Unit
     }
 
     val activityResult =
@@ -77,6 +91,7 @@ fun LoginPage(
             factory = {
                 SignInButton(it).apply {
                     setOnClickListener {
+                        loginViewModel.resetNavigation()
                         activityResult.launch(nativeAuth.getGoogleSignIn())
                     }
                 }
@@ -88,6 +103,7 @@ fun LoginPage(
                 .fillMaxWidth()
                 .padding(16.dp)
                 .clickable {
+                    loginViewModel.resetNavigation()
                     // TODO Add Apple Login Function
                 },
             elevation = 4.dp
@@ -116,6 +132,7 @@ fun LoginPage(
                     .padding(16.dp)
                     .clickable {
                         coroutineScope.launch {
+                            loginViewModel.resetNavigation()
                             authViewModel.loginByEmailPass(
                                 BuildConfig.EMAIL_TEST_AN,
                                 BuildConfig.PASSWORD_TEST_AN
