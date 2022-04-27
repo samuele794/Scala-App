@@ -1,5 +1,6 @@
 package it.samuele794.scala.viewmodel.onboarding
 
+import co.touchlab.kermit.Logger
 import it.samuele794.scala.viewmodel.base.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,9 @@ interface OnBoardingVMI {
     fun updateWeight(weight: String)
 }
 
-class OnBoardingViewModel : ViewModel(), OnBoardingVMI {
+class OnBoardingViewModel(
+    private val logger: Logger
+) : ViewModel(), OnBoardingVMI {
 
     private val mUiState = MutableStateFlow(UserDataUI())
     override val uiState = mUiState.asStateFlow()
@@ -34,38 +37,33 @@ class OnBoardingViewModel : ViewModel(), OnBoardingVMI {
 
     override fun updateHeight(height: String) {
         runCatching {
-            //TODO Change this check logic for better ui usability
-
-            var mHeight = height
-            if (height.contains(","))
-                mHeight = height.replace(",", ".")
-
-            val isFormatted = UserDataUI.DIGIT_TRUNCATE.matchEntire(mHeight)
-                ?.groupValues?.last()
-
-            if (isFormatted != null) {
-                viewModelScope.launch {
-                    mUiState.emit(uiState.value.copy(height = isFormatted.toDouble()))
-                }
+            viewModelScope.launch {
+                mUiState.emit(uiState.value.copy(height = height.toInt()))
             }
         }
     }
 
     override fun updateWeight(weight: String) {
         runCatching {
-            //TODO Change this check logic for better ui usability
-
             var mWeight = weight
+
             if (weight.contains(","))
                 mWeight = weight.replace(",", ".")
 
-            val isFormatted = UserDataUI.DIGIT_TRUNCATE.matchEntire(mWeight)
-                ?.groupValues?.last()
+            if (mWeight.count { it == '.' } > 1)
+                mWeight = mWeight.reversed().replaceFirst(".", "").reversed()
 
-            if (isFormatted != null) {
-                viewModelScope.launch {
-                    mUiState.emit(uiState.value.copy(weight = isFormatted.toDouble()))
+            mWeight.split(".").apply {
+                if (size > 1) {
+                    val digitPart = last()
+                    if (digitPart.count() > 1) {
+                        mWeight = first() + "." + digitPart.substring(0..1)
+                    }
                 }
+            }
+
+            viewModelScope.launch {
+                mUiState.emit(uiState.value.copy(weight = mWeight))
             }
         }
     }
@@ -73,14 +71,7 @@ class OnBoardingViewModel : ViewModel(), OnBoardingVMI {
     data class UserDataUI(
         val name: String = "",
         val surname: String = "",
-        val height: Double? = null,
-        val weight: Double? = null
-    ) {
-
-        companion object {
-            private const val NUMBER_2_DIGIT_TRUNCATE = "^(\\d+(?:.\\d{1,2})?).*"
-
-            internal val DIGIT_TRUNCATE = Regex(NUMBER_2_DIGIT_TRUNCATE)
-        }
-    }
+        val height: Int? = null,
+        val weight: String? = null
+    )
 }

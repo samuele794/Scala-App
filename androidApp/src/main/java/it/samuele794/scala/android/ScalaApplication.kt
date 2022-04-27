@@ -33,7 +33,7 @@ class ScalaApplication : Application() {
                         get()
                     )
                 }
-                viewModel { OnBoardingViewModel() }
+                viewModel { OnBoardingViewModel(get { parametersOf("OnBoardingViewModel") }) }
             }
         )
     }
