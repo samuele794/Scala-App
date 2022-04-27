@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class AuthViewModel(nativeAuth: NativeAuth, private val logger: Logger) : ViewModel() {
+class AuthViewModel(
+    nativeAuth: NativeAuth,
+    private val logger: Logger
+) : ViewModel() {
 
     val isLoggedFlow = Firebase.auth.authStateChanged
 
@@ -24,18 +27,19 @@ class AuthViewModel(nativeAuth: NativeAuth, private val logger: Logger) : ViewMo
     }
 
     private suspend fun startFirebaseAuth(credential: AuthCredential) =
-        withContext(Dispatchers.Default) {
-            Firebase.auth.signInWithCredential(credential)
-
+        withContext(Dispatchers.Default + SupervisorJob()) {
+            runCatching {
+                Firebase.auth.signInWithCredential(credential).user!!
+            }
         }
 
     suspend fun loginByEmailPass(email: String, password: String) =
         withContext(Dispatchers.Default + SupervisorJob()) {
-            val result = runCatching {
-                Firebase.auth.signInWithEmailAndPassword(email, password)
+            val userResult = runCatching {
+                Firebase.auth.signInWithEmailAndPassword(email, password).user!!
             }
 
-            if (result.isFailure) {
+            if (userResult.isFailure) {
                 logger.i("Login By Email Failed, Create Account")
                 Firebase.auth.createUserWithEmailAndPassword(email, password)
 

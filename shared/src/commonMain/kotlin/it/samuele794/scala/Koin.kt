@@ -3,6 +3,8 @@ package it.samuele794.scala
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.StaticConfig
 import co.touchlab.kermit.platformLogWriter
+import it.samuele794.scala.repository.UserRepository
+import it.samuele794.scala.repository.UserRepositoryImpl
 import kotlinx.datetime.Clock
 import org.koin.core.KoinApplication
 import org.koin.core.component.KoinComponent
@@ -52,6 +54,10 @@ private val coreModule = module {
 //    }
     single<Clock> {
         Clock.System
+    }
+
+    single<UserRepository> {
+        UserRepositoryImpl()
     }
 
     // platformLogWriter() is a relatively simple config option, useful for local debugging. For production
