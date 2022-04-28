@@ -5,6 +5,7 @@ plugins {
     // https://github.com/LouisCAD/CompleteKotlin
     id("com.louiscad.complete-kotlin") version "1.1.0"
     kotlin("plugin.serialization") version "1.6.10"
+    id("dev.icerock.mobile.multiplatform-resources")
 }
 
 version = "1.0"
@@ -42,11 +43,16 @@ kotlin {
                 api("dev.gitlive:firebase-auth:1.6.1")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
+
+                api("dev.icerock.moko:resources:0.19.0")
             }
         }
+
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+
+//                implementation("dev.icerock.moko:resources-test:0.18.0")
             }
         }
         val androidMain by getting {
@@ -65,6 +71,8 @@ kotlin {
 
                 // https://mvnrepository.com/artifact/org.jetbrains.kotlinx/kotlinx-coroutines-play-services
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.1")
+
+                api("dev.icerock.moko:resources-compose:0.19.0")
 
             }
         }
@@ -93,4 +101,10 @@ android {
         minSdk = 26
         targetSdk = 32
     }
+}
+
+
+multiplatformResources {
+    multiplatformResourcesPackage = "it.samuele794.scala.resources"
+    multiplatformResourcesClassName = "SharedRes"
 }
