@@ -1,6 +1,7 @@
 package it.samuele794.scala.viewmodel.onboarding
 
 import co.touchlab.kermit.Logger
+import it.samuele794.scala.model.AccountType
 import it.samuele794.scala.viewmodel.base.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +15,11 @@ interface OnBoardingVMI {
     fun updateSurname(surname: String)
     fun updateHeight(height: String)
     fun updateWeight(weight: String)
+
+    fun personalDataNextEnabled(): Boolean
+
+    fun getAccountTypes(): Array<AccountType>
+    fun updateAccountType(accountType: AccountType)
 }
 
 class OnBoardingViewModel(
@@ -68,10 +74,26 @@ class OnBoardingViewModel(
         }
     }
 
+    override fun updateAccountType(accountType: AccountType) {
+        viewModelScope.launch {
+            mUiState.emit(uiState.value.copy(accountType = accountType))
+        }
+    }
+
+    override fun getAccountTypes(): Array<AccountType> = AccountType.values()
+
+    override fun personalDataNextEnabled(): Boolean {
+        return uiState.value.run {
+            name.isNotBlank() && surname.isNotBlank() &&
+                    accountType != AccountType.NONE
+        }
+    }
+
     data class UserDataUI(
         val name: String = "",
         val surname: String = "",
         val height: Int? = null,
-        val weight: String? = null
+        val weight: String? = null,
+        val accountType: AccountType = AccountType.NONE
     )
 }

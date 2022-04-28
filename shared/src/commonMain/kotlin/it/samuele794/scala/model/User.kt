@@ -9,6 +9,8 @@ data class User(
     val name: String = "",
     @SerialName("surname")
     val surname: String = "",
+    @SerialName("accountType")
+    val accountType: AccountType = AccountType.USER,
     @SerialName("needOnBoard")
     val needOnBoard: Boolean = true
 )
