@@ -17,6 +17,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import it.samuele794.scala.android.R
 import it.samuele794.scala.android.ui.navigation.OnBoardingNavGraph
 import it.samuele794.scala.android.ui.theme.ScalaAppTheme
+import it.samuele794.scala.model.AccountType
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingVMI
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,7 +31,6 @@ fun BodyDataPage(
 ) {
 
     val uiState by onBoardingViewModel.uiState.collectAsState()
-    val nextEnabled = uiState.height != null && uiState.weight != null
 
     Column(
         modifier = Modifier
@@ -56,7 +56,7 @@ fun BodyDataPage(
 
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = uiState.weight?.toString() ?: "",
+            value = uiState.weight ?: "",
             label = {
                 Text(text = stringResource(id = R.string.weight))
             },
@@ -76,7 +76,6 @@ fun BodyDataPage(
             horizontalArrangement = Arrangement.Center
         ) {
             Button(
-                enabled = nextEnabled,
                 onClick = {
 //                    navigator.navigate(BodyDataPageDestination)
                 }
@@ -101,6 +100,10 @@ fun BodyDataPagePreview() {
 
             override fun updateWeight(weight: String) = Unit
 
+            override fun personalDataNextEnabled(): Boolean = true
+
+            override fun getAccountTypes(): Array<AccountType> = AccountType.values()
+            override fun updateAccountType(accountType: AccountType) = Unit
         })
     }
 }

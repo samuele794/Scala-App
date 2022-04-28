@@ -1,12 +1,8 @@
 package it.samuele794.scala.android.ui.onboarding
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,11 +14,14 @@ import it.samuele794.scala.android.R
 import it.samuele794.scala.android.ui.destinations.BodyDataPageDestination
 import it.samuele794.scala.android.ui.navigation.OnBoardingNavGraph
 import it.samuele794.scala.android.ui.theme.ScalaAppTheme
+import it.samuele794.scala.model.AccountType
+import it.samuele794.scala.resources.SharedRes
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingVMI
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
+@OptIn(ExperimentalMaterialApi::class)
 @OnBoardingNavGraph(start = true)
 @Destination
 @Composable
@@ -33,7 +32,9 @@ fun PersonalDataPage(
 
     val uiState by onBoardingViewModel.uiState.collectAsState()
 
-    val nextEnabled = uiState.name.isNotBlank() && uiState.surname.isNotBlank()
+    val nextEnabled = onBoardingViewModel.personalDataNextEnabled()
+
+    var dropExpanded by remember { mutableStateOf(false) }
 
 
     Column(
@@ -42,6 +43,46 @@ fun PersonalDataPage(
             .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.Center
     ) {
+
+        ExposedDropdownMenuBox(
+            modifier = Modifier.fillMaxWidth(),
+            expanded = dropExpanded,
+            onExpandedChange = { dropExpanded = !dropExpanded }) {
+
+            //TODO ADD STYLE FOR FAKE DISABLED TEXTFIELD
+            OutlinedTextField(
+                modifier = Modifier.fillMaxWidth(),
+                readOnly = true,
+                enabled = false,
+                value = stringResource(id = uiState.accountType.accountName.resourceId),
+                onValueChange = { },
+                label = { Text(stringResource(id = SharedRes.strings.account_type.resourceId)) },
+                trailingIcon = {
+                    ExposedDropdownMenuDefaults.TrailingIcon(expanded = dropExpanded)
+                }
+            )
+
+            ExposedDropdownMenu(
+                modifier = Modifier.fillMaxWidth(),
+                expanded = dropExpanded,
+                onDismissRequest = { dropExpanded = false }) {
+                onBoardingViewModel.getAccountTypes().forEach { accountType ->
+                    val name = stringResource(id = accountType.accountName.resourceId)
+
+                    DropdownMenuItem(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            onBoardingViewModel.updateAccountType(accountType)
+                            dropExpanded = false
+                        }
+                    ) {
+                        Text(text = name)
+                    }
+                }
+            }
+        }
+
+
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
             value = uiState.name,
@@ -115,6 +156,10 @@ fun PersonalDataPagePreview() {
 
                 override fun updateWeight(weight: String) = Unit
 
+                override fun personalDataNextEnabled(): Boolean = true
+
+                override fun getAccountTypes(): Array<AccountType> = AccountType.values()
+                override fun updateAccountType(accountType: AccountType) = Unit
             }
         )
     }
