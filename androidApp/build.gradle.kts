@@ -5,9 +5,11 @@ plugins {
     kotlin("android")
     id("com.google.devtools.ksp") version "1.6.10-1.0.4"
     id("kotlin-parcelize")
+    id("com.google.firebase.appdistribution")
 }
 
 apply(plugin = "com.google.gms.google-services")
+apply(plugin = "com.google.firebase.crashlytics")
 
 
 val localProperties = Properties()
@@ -65,6 +67,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            firebaseAppDistribution {
+                appId = localProperties.getProperty("firebase.projectID")
+                artifactType = "APK"
+                testers = localProperties.getProperty("firebase.testers")
+            }
         }
     }
 
@@ -81,11 +89,11 @@ android {
 buildscript {
     repositories {
         google()
-
     }
 
     dependencies {
         classpath("com.google.gms:google-services:4.3.10")
+        classpath("com.google.firebase:firebase-crashlytics-gradle:2.8.1")
     }
 }
 
@@ -109,12 +117,10 @@ dependencies {
     implementation("io.insert-koin:koin-androidx-compose:3.1.6")
 
     implementation(platform("com.google.firebase:firebase-bom:29.3.1"))
+
     implementation("com.google.firebase:firebase-analytics-ktx")
-
-
-    // Declare the dependency for the Firebase Authentication library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-crashlytics-ktx")
 
     // Also declare the dependency for the Google Play services library and specify its version
     implementation("com.google.android.gms:play-services-auth:20.1.0")

@@ -2,6 +2,7 @@ package it.samuele794.scala
 
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.StaticConfig
+import co.touchlab.kermit.crashlytics.CrashlyticsLogWriter
 import co.touchlab.kermit.platformLogWriter
 import it.samuele794.scala.repository.UserRepository
 import it.samuele794.scala.repository.UserRepositoryImpl
@@ -15,6 +16,8 @@ import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
 fun initKoin(koinApplication: KoinApplication.() -> Unit, appModule: Module): KoinApplication {
+    Logger.addLogWriter(CrashlyticsLogWriter())
+
     val koinApplication = startKoin {
         koinApplication()
         modules(

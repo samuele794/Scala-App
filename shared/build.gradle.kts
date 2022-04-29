@@ -34,6 +34,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
 
                 api("co.touchlab:kermit:1.1.1")
+                api("co.touchlab:kermit-crashlytics:1.1.1")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
 
