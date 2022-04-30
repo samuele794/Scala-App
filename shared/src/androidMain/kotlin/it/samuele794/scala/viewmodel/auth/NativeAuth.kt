@@ -19,6 +19,7 @@ actual class NativeAuth(private val context: Context, private val googleToken: S
         val request = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(googleToken)
             .requestProfile()
+            .requestEmail()
             .build()
 
         val signIn = GoogleSignIn.getClient(context, request)
