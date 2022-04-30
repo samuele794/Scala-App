@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 
 interface OnBoardingVMI {
     val uiState: StateFlow<OnBoardingViewModel.UserDataUI>
@@ -20,6 +21,7 @@ interface OnBoardingVMI {
 
     fun getAccountTypes(): Array<AccountType>
     fun updateAccountType(accountType: AccountType)
+    fun updateBirthDate(localDate: LocalDate)
 }
 
 class OnBoardingViewModel(
@@ -89,11 +91,22 @@ class OnBoardingViewModel(
         }
     }
 
+    override fun updateBirthDate(localDate: LocalDate) {
+        viewModelScope.launch {
+            mUiState.emit(uiState.value.copy(birthDate = localDate))
+        }
+    }
+
     data class UserDataUI(
         val name: String = "",
         val surname: String = "",
         val height: Int? = null,
         val weight: String? = null,
-        val accountType: AccountType = AccountType.NONE
-    )
+        val accountType: AccountType = AccountType.NONE,
+        val birthDate: LocalDate? = null
+    ) {
+        fun getFormattedBirthDate(): String {
+            return birthDate?.toString() ?: ""
+        }
+    }
 }

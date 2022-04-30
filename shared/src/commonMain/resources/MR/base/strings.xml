@@ -1,8 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <resources>
+    <string name="app_name">Scala</string>
+
+    <string name="apple_login">Login with Apple</string>
+
+    <string name="user_name">Name</string>
+    <string name="user_surname">Surname</string>
+
+    <string name="birth_day">Birthday</string>
+    <string name="select_birth_day">Select birthday</string>
+
     <string name="select_account_type">Select Account Type</string>
+
+    <string name="height">Height</string>
+    <string name="weight">Weight</string>
+
+    <string name="label_cm">cm</string>
+    <string name="label_kg">kg</string>
 
     <string name="amateur">Amateur</string>
     <string name="trainer">Trainer</string>
     <string name="account_type">Account Type</string>
+
+    <string name="next">Next</string>
+
+    <string name="home">Home</string>
+    <string name="search">Search</string>
+    <string name="profile">Profile</string>
 </resources>

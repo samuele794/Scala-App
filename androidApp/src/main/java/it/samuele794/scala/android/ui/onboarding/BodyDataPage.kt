@@ -22,6 +22,7 @@ import it.samuele794.scala.viewmodel.onboarding.OnBoardingVMI
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.datetime.LocalDate
 
 @OnBoardingNavGraph
 @Destination
@@ -49,7 +50,7 @@ fun BodyDataPage(
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             trailingIcon = {
-                Text(text = stringResource(id = R.string.cm))
+                Text(text = stringResource(id = R.string.label_cm))
             },
             singleLine = true
         )
@@ -65,7 +66,7 @@ fun BodyDataPage(
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             trailingIcon = {
-                Text(text = stringResource(id = R.string.kg))
+                Text(text = stringResource(id = R.string.label_kg))
             }
         )
 
@@ -104,6 +105,8 @@ fun BodyDataPagePreview() {
 
             override fun getAccountTypes(): Array<AccountType> = AccountType.values()
             override fun updateAccountType(accountType: AccountType) = Unit
+
+            override fun updateBirthDate(localDate: LocalDate) = Unit
         })
     }
 }

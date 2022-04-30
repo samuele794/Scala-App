@@ -1,9 +1,14 @@
 package it.samuele794.scala.android.ui.onboarding
 
+import android.app.DatePickerDialog
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CalendarToday
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -20,6 +25,9 @@ import it.samuele794.scala.viewmodel.onboarding.OnBoardingVMI
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
 
 @OptIn(ExperimentalMaterialApi::class)
 @OnBoardingNavGraph(start = true)
@@ -30,18 +38,25 @@ fun PersonalDataPage(
     onBoardingViewModel: OnBoardingVMI
 ) {
 
+    val context = LocalContext.current
+
     val uiState by onBoardingViewModel.uiState.collectAsState()
-
     val nextEnabled = onBoardingViewModel.personalDataNextEnabled()
-
     var dropExpanded by remember { mutableStateOf(false) }
+
+    val datePickerDialog = DatePickerDialog(context)
+        .apply {
+            datePicker.maxDate = Clock.System.now().toEpochMilliseconds()
+            setOnDateSetListener { _, year, month, date ->
+                onBoardingViewModel.updateBirthDate(LocalDate(year, Month(month + 1), date))
+            }
+        }
 
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.Center
     ) {
 
         ExposedDropdownMenuBox(
@@ -103,6 +118,26 @@ fun PersonalDataPage(
             label = { Text(text = stringResource(id = R.string.user_surname)) }
         )
 
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    datePickerDialog.show()
+                },
+            value = uiState.getFormattedBirthDate(),
+            onValueChange = {},
+            label = { Text(text = stringResource(id = R.string.select_birth_day)) },
+            trailingIcon = {
+                Icon(imageVector = Icons.Outlined.CalendarToday, contentDescription = "")
+            },
+            readOnly = true,
+            enabled = false
+        )
+
+
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -160,6 +195,8 @@ fun PersonalDataPagePreview() {
 
                 override fun getAccountTypes(): Array<AccountType> = AccountType.values()
                 override fun updateAccountType(accountType: AccountType) = Unit
+
+                override fun updateBirthDate(localDate: LocalDate) = Unit
             }
         )
     }
