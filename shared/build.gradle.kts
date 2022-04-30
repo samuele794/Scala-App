@@ -31,7 +31,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("io.insert-koin:koin-core:3.1.6")
-                implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
+                api("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
 
                 api("co.touchlab:kermit:1.1.1")
                 api("co.touchlab:kermit-crashlytics:1.1.1")
@@ -96,11 +96,11 @@ kotlin {
 }
 
 android {
-    compileSdk = 32
+    compileSdk = 31
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 26
-        targetSdk = 32
+        targetSdk = 31
     }
 }
 
