@@ -4,15 +4,24 @@ import co.touchlab.kermit.Logger
 import co.touchlab.kermit.StaticConfig
 import co.touchlab.kermit.crashlytics.CrashlyticsLogWriter
 import co.touchlab.kermit.platformLogWriter
+import de.jensklingenberg.ktorfit.Ktorfit
+import de.jensklingenberg.ktorfit.create
+import io.ktor.client.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.logging.*
+import it.samuele794.scala.api.maps.GoogleMapsApi
+import it.samuele794.scala.repository.GoogleMapsRepository
 import it.samuele794.scala.repository.UserRepository
 import it.samuele794.scala.repository.UserRepositoryImpl
 import kotlinx.datetime.Clock
+import kotlinx.serialization.json.Json
 import org.koin.core.KoinApplication
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 fun initKoin(koinApplication: KoinApplication.() -> Unit, appModule: Module): KoinApplication {
@@ -59,8 +68,33 @@ private val coreModule = module {
         Clock.System
     }
 
+    single {
+        Json {
+            ignoreUnknownKeys = true
+            prettyPrint = true
+            isLenient = true
+        }
+    }
+
+    factory(named("JsonClient")) {
+        HttpClient {
+            install(ContentNegotiation) {
+                install(Logging)
+            }
+        }
+    }
+
+    factory {
+        Ktorfit(baseUrl = BuildKonfig.GOOGLE_API_BASE_URL)
+            .create<GoogleMapsApi>()
+    }
+
     single<UserRepository> {
         UserRepositoryImpl()
+    }
+
+    single {
+        GoogleMapsRepository(get(), get(), get(named("GOOGLE_API_KEY")))
     }
 
     // platformLogWriter() is a relatively simple config option, useful for local debugging. For production
