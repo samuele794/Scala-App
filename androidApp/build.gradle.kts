@@ -3,9 +3,10 @@ import java.util.*
 plugins {
     id("com.android.application")
     kotlin("android")
-    id("com.google.devtools.ksp") version "1.6.10-1.0.4"
     id("kotlin-parcelize")
     id("com.google.firebase.appdistribution")
+    id("com.google.devtools.ksp") version "1.6.10-1.0.4"
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1"
 }
 
 apply(plugin = "com.google.gms.google-services")
@@ -43,6 +44,8 @@ android {
             "PASSWORD_TEST_AN",
             "\"${localProperties["auth.password"]}\""
         )
+
+        resValue("string", "maps_api_key", localProperties["maps.map.apikey"].toString())
     }
 
     applicationVariants.all {
@@ -130,7 +133,9 @@ dependencies {
     // Also declare the dependency for the Google Play services library and specify its version
     implementation("com.google.android.gms:play-services-auth:20.1.0")
 
+    implementation("com.google.maps.android:maps-compose:1.2.0")
+
     // https://composedestinations.rafaelcosta.xyz/
-    implementation("io.github.raamcosta.compose-destinations:core:1.5.1-beta")
-    ksp("io.github.raamcosta.compose-destinations:ksp:1.5.1-beta")
+    implementation("io.github.raamcosta.compose-destinations:core:1.5.2-beta")
+    ksp("io.github.raamcosta.compose-destinations:ksp:1.5.2-beta")
 }

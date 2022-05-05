@@ -1,3 +1,11 @@
+import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
+import java.util.*
+
+val ktorfitVersion = "1.0.0-beta04"
+
+val localProperties = Properties()
+localProperties.load(project.rootProject.file("local.properties").inputStream())
+
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -6,6 +14,8 @@ plugins {
     id("com.louiscad.complete-kotlin") version "1.1.0"
     kotlin("plugin.serialization") version "1.6.10"
     id("dev.icerock.mobile.multiplatform-resources")
+    id("com.codingfeline.buildkonfig")
+    id("com.google.devtools.ksp") version "1.6.10-1.0.4"
 }
 
 version = "1.0"
@@ -46,6 +56,16 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
 
                 api("dev.icerock.moko:resources:0.19.0")
+
+                implementation("de.jensklingenberg.ktorfit:ktorfit-lib:$ktorfitVersion")
+
+                implementation("io.ktor:ktor-client-core:2.0.1")
+                implementation("io.ktor:ktor-client-cio:2.0.1")
+                implementation("io.ktor:ktor-client-logging:2.0.1")
+                implementation("io.ktor:ktor-client-content-negotiation:2.0.1")
+                implementation("io.ktor:ktor-serialization-kotlinx-json:2.0.1")
+
+
             }
         }
 
@@ -74,6 +94,9 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.6.1")
 
                 api("dev.icerock.moko:resources-compose:0.19.0")
+
+                api("com.google.android.gms:play-services-maps:18.0.2")
+                api("com.google.android.libraries.places:places:2.6.0")
 
             }
         }
@@ -104,8 +127,22 @@ android {
     }
 }
 
-
 multiplatformResources {
     multiplatformResourcesPackage = "it.samuele794.scala.resources"
     multiplatformResourcesClassName = "SharedRes"
+}
+
+buildkonfig {
+    packageName = "it.samuele794.scala"
+
+    defaultConfigs {
+        buildConfigField(STRING, "GOOGLE_API_BASE_URL", "https://maps.googleapis.com/")
+    }
+}
+
+dependencies {
+    add("kspMetadata", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfitVersion")
+    add("kspAndroid", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfitVersion")
+    add("kspIosX64", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfitVersion")
+    add("kspIosSimulatorArm64", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfitVersion")
 }
