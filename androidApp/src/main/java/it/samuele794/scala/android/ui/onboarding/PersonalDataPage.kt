@@ -17,6 +17,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import it.samuele794.scala.android.R
 import it.samuele794.scala.android.ui.destinations.BodyDataPageDestination
+import it.samuele794.scala.android.ui.destinations.TrainerLocationOperationPageDestination
 import it.samuele794.scala.android.ui.navigation.OnBoardingNavGraph
 import it.samuele794.scala.android.ui.theme.ScalaAppTheme
 import it.samuele794.scala.model.AccountType
@@ -147,7 +148,17 @@ fun PersonalDataPage(
             Button(
                 enabled = nextEnabled,
                 onClick = {
-                    navigator.navigate(BodyDataPageDestination)
+                    when (uiState.accountType) {
+                        AccountType.USER -> {
+                            navigator.navigate(BodyDataPageDestination)
+
+                        }
+
+                        AccountType.TRAINER -> {
+                            navigator.navigate(TrainerLocationOperationPageDestination)
+                        }
+                        else -> Unit
+                    }
                 }
             ) { Text(text = stringResource(id = R.string.next)) }
         }
