@@ -17,6 +17,7 @@
 
     <string name="label_cm">cm</string>
     <string name="label_kg">kg</string>
+    <string name="label_km">km</string>
 
     <string name="amateur">Amateur</string>
     <string name="trainer">Trainer</string>
@@ -27,4 +28,6 @@
     <string name="home">Home</string>
     <string name="search">Search</string>
     <string name="profile">Profile</string>
+
+    <string name="search_place">Search Place</string>
 </resources>
