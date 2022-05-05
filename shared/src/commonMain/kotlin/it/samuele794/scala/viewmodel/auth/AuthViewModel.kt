@@ -6,7 +6,6 @@ import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.auth
 import it.samuele794.scala.viewmodel.base.ViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -27,14 +26,14 @@ class AuthViewModel(
     }
 
     private suspend fun startFirebaseAuth(credential: AuthCredential) =
-        withContext(Dispatchers.Default + SupervisorJob()) {
+        withContext(Dispatchers.Default) {
             runCatching {
                 Firebase.auth.signInWithCredential(credential).user!!
             }
         }
 
     suspend fun loginByEmailPass(email: String, password: String) =
-        withContext(Dispatchers.Default + SupervisorJob()) {
+        withContext(Dispatchers.Default) {
             val userResult = runCatching {
                 Firebase.auth.signInWithEmailAndPassword(email, password).user!!
             }
