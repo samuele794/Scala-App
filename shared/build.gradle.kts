@@ -96,7 +96,6 @@ kotlin {
                 api("dev.icerock.moko:resources-compose:0.19.0")
 
                 api("com.google.android.gms:play-services-maps:18.0.2")
-                api("com.google.android.libraries.places:places:2.6.0")
 
             }
         }
