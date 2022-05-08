@@ -2,6 +2,7 @@ package it.samuele794.scala.viewmodel.onboarding
 
 import co.touchlab.kermit.Logger
 import it.samuele794.scala.model.AccountType
+import it.samuele794.scala.model.maps.Place
 import it.samuele794.scala.viewmodel.base.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +23,8 @@ interface OnBoardingVMI {
     fun getAccountTypes(): Array<AccountType>
     fun updateAccountType(accountType: AccountType)
     fun updateBirthDate(localDate: LocalDate)
+    fun addTrainerPlace(place: Place)
+    fun removeTrainerPlace(place: Place)
 }
 
 class OnBoardingViewModel(
@@ -86,8 +89,10 @@ class OnBoardingViewModel(
 
     override fun personalDataNextEnabled(): Boolean {
         return uiState.value.run {
-            name.isNotBlank() && surname.isNotBlank() &&
-                    accountType != AccountType.NONE
+            name.isNotBlank()
+                    && surname.isNotBlank()
+                    && accountType != AccountType.NONE
+                    && birthDate != null
         }
     }
 
@@ -97,13 +102,38 @@ class OnBoardingViewModel(
         }
     }
 
+    override fun addTrainerPlace(place: Place) {
+        viewModelScope.launch {
+            mUiState.emit(
+                uiState.value.run {
+                    val trainerPlacesNew = trainerPlaces.toMutableList()
+                    trainerPlacesNew.add(place)
+                    uiState.value.copy(trainerPlaces = trainerPlacesNew)
+                }
+            )
+        }
+    }
+
+    override fun removeTrainerPlace(place: Place) {
+        viewModelScope.launch {
+            mUiState.emit(
+                uiState.value.run {
+                    val trainerPlacesNew = trainerPlaces.toMutableList()
+                    trainerPlacesNew.remove(place)
+                    uiState.value.copy(trainerPlaces = trainerPlacesNew)
+                }
+            )
+        }
+    }
+
     data class UserDataUI(
         val name: String = "",
         val surname: String = "",
         val height: Int? = null,
         val weight: String? = null,
         val accountType: AccountType = AccountType.NONE,
-        val birthDate: LocalDate? = null
+        val birthDate: LocalDate? = null,
+        val trainerPlaces: List<Place> = emptyList()
     ) {
         fun getFormattedBirthDate(): String {
             return birthDate?.toString() ?: ""

@@ -21,6 +21,7 @@ import it.samuele794.scala.android.ui.destinations.TrainerLocationOperationPageD
 import it.samuele794.scala.android.ui.navigation.OnBoardingNavGraph
 import it.samuele794.scala.android.ui.theme.ScalaAppTheme
 import it.samuele794.scala.model.AccountType
+import it.samuele794.scala.model.maps.Place
 import it.samuele794.scala.resources.SharedRes
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingVMI
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingViewModel
@@ -208,6 +209,10 @@ fun PersonalDataPagePreview() {
                 override fun updateAccountType(accountType: AccountType) = Unit
 
                 override fun updateBirthDate(localDate: LocalDate) = Unit
+
+                override fun addTrainerPlace(place: Place) = Unit
+
+                override fun removeTrainerPlace(place: Place) = Unit
             }
         )
     }
