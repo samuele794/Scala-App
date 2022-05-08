@@ -1,35 +1,33 @@
 package it.samuele794.scala.android.ui.onboarding
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.maps.android.compose.CameraPositionState
-import com.google.maps.android.compose.Circle
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.result.ResultBackNavigator
 import it.samuele794.scala.android.ui.navigation.OnBoardingNavGraph
 import it.samuele794.scala.android.ui.theme.ScalaAppTheme
 import it.samuele794.scala.model.maps.LatLng
 import it.samuele794.scala.model.maps.Place
 import it.samuele794.scala.resources.SharedRes
 import it.samuele794.scala.utils.toLatLng
-import it.samuele794.scala.viewmodel.onboarding.OnBoardingVMI
 import it.samuele794.scala.viewmodel.onboarding.TrainerLocationSearchViewModel
 import it.samuele794.scala.viewmodel.onboarding.TrainerLocationVMI
 import org.koin.androidx.compose.viewModel
@@ -38,80 +36,76 @@ import org.koin.androidx.compose.viewModel
 @Destination
 @Composable
 fun TrainerLocationSearchPage(
-    onBoardingViewModel: OnBoardingVMI
+    resultNavigator: ResultBackNavigator<Place>
 ) {
     val trainerLocationViewModel: TrainerLocationVMI by viewModel<TrainerLocationSearchViewModel>()
-    //TODO SAVE ZOOM STATE
-    val zoomSelected by rememberSaveable {
-        mutableStateOf(13f)
-    }
+    val cameraPositionState = rememberCameraPositionState()
 
-//    val uiState by onBoardingViewModel.uiState.collectAsState()
     val searchUI by trainerLocationViewModel.uiState.collectAsState()
     val placeSelected = searchUI.placeSelected
 
-    Column(
+    LaunchedEffect(searchUI.placeSelected) {
+        val place = searchUI.placeSelected
+        if (place != null) {
+            cameraPositionState.move(
+                CameraUpdateFactory.newLatLngZoom(
+                    place.latLng.toLatLng(),
+                    12F
+                )
+            )
+        }
+    }
+
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .scrollable(rememberScrollState(), orientation = Orientation.Vertical)
     ) {
-        SearchField(
-            modifier = Modifier.weight(1f),
-            searchAddressResult = searchUI.trainerLocationResult,
-            searchTerm = searchUI.searchedTerm,
-            placeSelected = placeSelected,
-            onPlaceSelected = {
-                trainerLocationViewModel.setPlaceSelected(it)
-            },
-            onTextUpdated = {
-                trainerLocationViewModel.getLocations(it)
-            }
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            SearchField(
+                modifier = Modifier.weight(1f),
+                searchAddressResult = searchUI.trainerLocationResult,
+                searchTerm = searchUI.searchedTerm,
+                placeSelected = placeSelected,
+                onPlaceSelected = {
+                    trainerLocationViewModel.setPlaceSelected(it)
+                },
+                onTextUpdated = {
+                    trainerLocationViewModel.getLocations(it)
+                }
+            )
 
-        if (searchUI.placeSelected != null) {
-            Row(
-                modifier = Modifier
-                    .weight(0.1f)
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+            GoogleMap(
+                modifier = Modifier.weight(1f),
+                cameraPositionState = cameraPositionState
             ) {
-                Text(
-                    modifier = Modifier.weight(0.2f),
-                    text = "${searchUI.searchRange} " + stringResource(id = SharedRes.strings.label_km.resourceId)
-                )
-                Slider(
-                    modifier = Modifier.weight(0.8f),
-                    value = searchUI.searchRange.toFloat(),
-                    onValueChange = {
-                        trainerLocationViewModel.updateRange(it.toInt())
-                    },
-                    valueRange = 1f..30f
-                )
+                if (placeSelected != null) {
+                    Marker(position = placeSelected.latLng.toLatLng())
+                }
             }
         }
 
 
-        GoogleMap(
-            modifier = Modifier.weight(1f),
-            cameraPositionState = if (placeSelected != null) {
-                CameraPositionState(
-                    position = CameraPosition.fromLatLngZoom(
-                        placeSelected.latLng.toLatLng(),
-                        zoomSelected
-                    )
-                )
-            } else {
-                rememberCameraPositionState()
-            }
+        AnimatedVisibility(
+            modifier = Modifier
+                .align(Alignment.BottomCenter),
+            visible = placeSelected != null,
+            enter = slideInVertically(), exit = slideOutVertically()
         ) {
-            if (placeSelected != null) {
-                Circle(
-                    center = placeSelected.latLng.toLatLng(),
-                    fillColor = MaterialTheme.colors.primary.copy(alpha = 0.5f),
-                    strokeColor = MaterialTheme.colors.secondary,
-                    radius = searchUI.searchRange.times(1000)
-                        .toDouble()
-                )
+            Button(
+                modifier = Modifier
+                    .padding(bottom = 16.dp),
+                onClick = {
+                    if (placeSelected != null) {
+                        resultNavigator.navigateBack(placeSelected)
+                    } else {
+                        resultNavigator.navigateBack()
+                    }
+                }) {
+                Text(text = stringResource(id = SharedRes.strings.next.resourceId))
             }
         }
     }
@@ -137,6 +131,7 @@ private fun SearchField(
             onValueChange = {
                 onTextUpdated(it)
             },
+            singleLine = true,
             label = { Text(stringResource(id = SharedRes.strings.search_place.resourceId)) }
         )
 

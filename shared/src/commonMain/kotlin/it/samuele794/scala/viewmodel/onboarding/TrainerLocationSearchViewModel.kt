@@ -13,7 +13,6 @@ interface TrainerLocationVMI {
     val uiState: StateFlow<TrainerLocationSearchViewModel.TrainerLocationUi>
 
     fun getLocations(name: String)
-    fun updateRange(range: Int)
     fun setPlaceSelected(place: Place?)
 }
 
@@ -62,12 +61,6 @@ class TrainerLocationSearchViewModel(
         }
     }
 
-    override fun updateRange(range: Int) {
-        viewModelScope.launch {
-            mUiState.emit(uiState.value.copy(searchRange = range))
-        }
-    }
-
     override fun setPlaceSelected(place: Place?) {
         viewModelScope.launch {
             mUiState.emit(uiState.value.copy(placeSelected = place))
@@ -76,7 +69,6 @@ class TrainerLocationSearchViewModel(
 
     data class TrainerLocationUi(
         val searchedTerm: String = "",
-        val searchRange: Int = 1,
         val trainerLocationResult: List<Place> = emptyList(),
         val placeSelected: Place? = null
     )
