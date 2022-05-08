@@ -16,6 +16,7 @@ plugins {
     id("dev.icerock.mobile.multiplatform-resources")
     id("com.codingfeline.buildkonfig")
     id("com.google.devtools.ksp") version "1.6.10-1.0.4"
+    id("kotlin-parcelize")
 }
 
 version = "1.0"
@@ -56,6 +57,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1")
 
                 api("dev.icerock.moko:resources:0.19.0")
+                api("dev.icerock.moko:parcelize:0.8.0")
 
                 implementation("de.jensklingenberg.ktorfit:ktorfit-lib:$ktorfitVersion")
 
