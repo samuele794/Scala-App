@@ -40,7 +40,9 @@ class ScalaApplication : Application() {
                 }
                 viewModel {
                     OnBoardingViewModel(
-                        get { parametersOf("OnBoardingViewModel") }
+                        get { parametersOf("OnBoardingViewModel") },
+                        get<AuthViewModel>().isLoggedFlow,
+                        get()
                     )
                 }
 

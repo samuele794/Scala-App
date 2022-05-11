@@ -1,14 +1,17 @@
 package it.samuele794.scala.viewmodel.onboarding
 
 import co.touchlab.kermit.Logger
+import dev.gitlive.firebase.auth.FirebaseUser
 import it.samuele794.scala.model.AccountType
 import it.samuele794.scala.model.maps.Place
+import it.samuele794.scala.repository.UserRepository
 import it.samuele794.scala.viewmodel.base.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 
 interface OnBoardingVMI {
     val uiState: StateFlow<OnBoardingViewModel.UserDataUI>
@@ -25,10 +28,14 @@ interface OnBoardingVMI {
     fun updateBirthDate(localDate: LocalDate)
     fun addTrainerPlace(place: Place)
     fun removeTrainerPlace(place: Place)
+
+    fun saveAccount()
 }
 
 class OnBoardingViewModel(
-    private val logger: Logger
+    private val logger: Logger,
+    private val loggedFlow: Flow<FirebaseUser?>,
+    private val userRepository: UserRepository
 ) : ViewModel(), OnBoardingVMI {
 
     private val mUiState = MutableStateFlow(UserDataUI())
@@ -123,6 +130,47 @@ class OnBoardingViewModel(
                     uiState.value.copy(trainerPlaces = trainerPlacesNew)
                 }
             )
+        }
+    }
+
+    override fun saveAccount() {
+        viewModelScope.launch(Dispatchers.Default) {
+            uiState.value.let { user ->
+                loggedFlow.collectLatest {
+                    if (it != null) {
+                        when (user.accountType) {
+                            AccountType.TRAINER -> {
+                                userRepository.saveNewTrainerUser(
+                                    it.uid,
+                                    user.name,
+                                    user.surname,
+                                    user.birthDate!!
+                                        .atStartOfDayIn(TimeZone.UTC),
+                                    user.accountType,
+                                    user.trainerPlaces
+                                )
+
+                            }
+
+                            AccountType.USER -> {
+                                userRepository.saveNewUser(
+                                    it.uid,
+                                    user.name,
+                                    user.surname,
+                                    user.birthDate!!
+                                        .atStartOfDayIn(TimeZone.UTC),
+                                    user.accountType
+                                )
+                            }
+
+                            else -> Unit
+
+                        }
+                    } else {
+                        //TODO SHOW ERROR
+                    }
+                }
+            }
         }
     }
 

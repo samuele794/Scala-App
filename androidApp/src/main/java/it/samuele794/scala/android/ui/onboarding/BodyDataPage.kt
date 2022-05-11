@@ -111,6 +111,8 @@ fun BodyDataPagePreview() {
             override fun addTrainerPlace(place: Place) = Unit
 
             override fun removeTrainerPlace(place: Place) = Unit
+
+            override fun saveAccount() = Unit
         })
     }
 }

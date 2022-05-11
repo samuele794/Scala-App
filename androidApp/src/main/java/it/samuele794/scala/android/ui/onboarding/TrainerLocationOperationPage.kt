@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavOptionsBuilder
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.maps.android.compose.CameraPositionState
 import com.google.maps.android.compose.GoogleMap
@@ -22,13 +23,20 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
+import dev.icerock.moko.resources.compose.stringResource
 import it.samuele794.scala.android.ui.destinations.TrainerLocationSearchPageDestination
 import it.samuele794.scala.android.ui.navigation.OnBoardingNavGraph
 import it.samuele794.scala.android.ui.theme.ScalaAppTheme
+import it.samuele794.scala.model.AccountType
 import it.samuele794.scala.model.maps.Place
+import it.samuele794.scala.resources.SharedRes
 import it.samuele794.scala.utils.toLatLng
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingVMI
+import it.samuele794.scala.viewmodel.onboarding.OnBoardingViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -68,7 +76,7 @@ fun TrainerLocationOperationPage(
     ModalBottomSheetLayout(
         sheetState = state,
         sheetContent = {
-            showCasePlace?.let { PlaceBottomSheet(it) }
+            PlaceBottomSheet(showCasePlace)
         }
     ) {
         Scaffold(
@@ -77,6 +85,21 @@ fun TrainerLocationOperationPage(
                     navigator.navigate(TrainerLocationSearchPageDestination())
                 }) {
                     Icon(imageVector = Icons.Filled.Add, contentDescription = "")
+                }
+            },
+            bottomBar = {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    if (uiState.trainerPlaces.isNotEmpty()) {
+                        Button(
+                            modifier = Modifier.align(Alignment.Center),
+                            onClick = {
+                                onBoardingVMI.saveAccount()
+//                                navigator.navigate()
+                            }
+                        ) {
+                            Text(text = stringResource(SharedRes.strings.next))
+                        }
+                    }
                 }
             }
         ) {
@@ -99,32 +122,34 @@ fun TrainerLocationOperationPage(
 }
 
 @Composable
-fun PlaceBottomSheet(showCasePlace: Place) {
+fun PlaceBottomSheet(showCasePlace: Place?) {
     Box(modifier = Modifier.fillMaxHeight(0.2f)) {
-        GoogleMap(
-            cameraPositionState = CameraPositionState(
-                CameraPosition.fromLatLngZoom(
-                    showCasePlace.latLng.toLatLng(),
-                    12f
+        if (showCasePlace != null) {
+            GoogleMap(
+                cameraPositionState = CameraPositionState(
+                    CameraPosition.fromLatLngZoom(
+                        showCasePlace.latLng.toLatLng(),
+                        12f
+                    )
+                ),
+                uiSettings = MapUiSettings(
+                    compassEnabled = false,
+                    indoorLevelPickerEnabled = false,
+                    mapToolbarEnabled = false,
+                    myLocationButtonEnabled = false,
+                    rotationGesturesEnabled = false,
+                    scrollGesturesEnabled = false,
+                    scrollGesturesEnabledDuringRotateOrZoom = false,
+                    tiltGesturesEnabled = false,
+                    zoomControlsEnabled = false,
+                    zoomGesturesEnabled = false,
                 )
-            ),
-            uiSettings = MapUiSettings(
-                compassEnabled = false,
-                indoorLevelPickerEnabled = false,
-                mapToolbarEnabled = false,
-                myLocationButtonEnabled = false,
-                rotationGesturesEnabled = false,
-                scrollGesturesEnabled = false,
-                scrollGesturesEnabledDuringRotateOrZoom = false,
-                tiltGesturesEnabled = false,
-                zoomControlsEnabled = false,
-                zoomGesturesEnabled = false,
-            )
-        ) {
-            Marker(
-                position = showCasePlace.latLng.toLatLng(),
-                title = showCasePlace.placeName
-            )
+            ) {
+                Marker(
+                    position = showCasePlace.latLng.toLatLng(),
+                    title = showCasePlace.placeName
+                )
+            }
         }
     }
 }
@@ -170,49 +195,61 @@ fun PlaceList(
 @Composable
 fun TrainerLocationOperationPagePreview() {
     ScalaAppTheme {
-//        TrainerLocationOperationPage(
-//            navigator = object : DestinationsNavigator {
-//                override fun clearBackStack(route: String): Boolean = true
-//
-//                override fun navigate(
-//                    route: String,
-//                    onlyIfResumed: Boolean,
-//                    builder: NavOptionsBuilder.() -> Unit
-//                ) = Unit
-//
-//                override fun navigateUp(): Boolean = true
-//
-//                override fun popBackStack(): Boolean = true
-//
-//                override fun popBackStack(
-//                    route: String,
-//                    inclusive: Boolean,
-//                    saveState: Boolean
-//                ): Boolean = true
-//            },
-//            onBoardingViewModel = object : OnBoardingVMI {
-//                override val uiState: StateFlow<OnBoardingViewModel.UserDataUI>
-//                    get() = MutableStateFlow(OnBoardingViewModel.UserDataUI())
-//
-//                override fun updateName(name: String) = Unit
-//
-//                override fun updateSurname(surname: String) = Unit
-//
-//                override fun updateHeight(height: String) = Unit
-//
-//                override fun updateWeight(weight: String) = Unit
-//
-//                override fun personalDataNextEnabled(): Boolean = true
-//
-//                override fun getAccountTypes(): Array<AccountType> = AccountType.values()
-//                override fun updateAccountType(accountType: AccountType) = Unit
-//
-//                override fun updateBirthDate(localDate: LocalDate) = Unit
-//
-//                override fun getLocations(name: String) {
-//                    TODO("Not yet implemented")
-//                }
-//            }
-//        )
+        TrainerLocationOperationPage(
+            navigator = object : DestinationsNavigator {
+                override fun clearBackStack(route: String): Boolean = true
+
+                override fun navigate(
+                    route: String,
+                    onlyIfResumed: Boolean,
+                    builder: NavOptionsBuilder.() -> Unit
+                ) = Unit
+
+                override fun navigateUp(): Boolean = true
+
+                override fun popBackStack(): Boolean = true
+
+                override fun popBackStack(
+                    route: String,
+                    inclusive: Boolean,
+                    saveState: Boolean
+                ): Boolean = true
+            },
+            resultRecipient = object :
+                ResultRecipient<TrainerLocationSearchPageDestination, Place> {
+
+                @Composable
+                override fun onNavResult(listener: (NavResult<Place>) -> Unit) = Unit
+
+                @Composable
+                override fun onResult(listener: (Place) -> Unit) = Unit
+            },
+            onBoardingVMI = object : OnBoardingVMI {
+                override val uiState: StateFlow<OnBoardingViewModel.UserDataUI>
+                    get() = MutableStateFlow(OnBoardingViewModel.UserDataUI())
+
+                override fun updateName(name: String) = Unit
+
+                override fun updateSurname(surname: String) = Unit
+
+                override fun updateHeight(height: String) = Unit
+
+                override fun updateWeight(weight: String) = Unit
+
+                override fun personalDataNextEnabled(): Boolean = true
+
+                override fun getAccountTypes(): Array<AccountType> = AccountType.values()
+                override fun updateAccountType(accountType: AccountType) = Unit
+
+                override fun updateBirthDate(localDate: LocalDate) = Unit
+                override fun addTrainerPlace(place: Place) = Unit
+
+                override fun removeTrainerPlace(place: Place) = Unit
+
+                override fun saveAccount() {
+                    TODO("Not yet implemented")
+                }
+            }
+        )
     }
 }

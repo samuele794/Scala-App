@@ -5,9 +5,12 @@ import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.DocumentSnapshot
 import dev.gitlive.firebase.firestore.firestore
+import it.samuele794.scala.model.AccountType
 import it.samuele794.scala.model.User
+import it.samuele794.scala.model.maps.Place
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.datetime.Instant
 
 interface UserRepository {
 
@@ -16,6 +19,23 @@ interface UserRepository {
     suspend fun updateNameSurname(userUid: String, name: String, surname: String)
     fun observeUserDocument(userUid: String): Flow<DocumentSnapshot>
     fun observeUserObj(userUid: String): Flow<User?>
+
+    suspend fun saveNewTrainerUser(
+        userUid: String,
+        name: String,
+        surname: String,
+        birthDate: Instant,
+        accountType: AccountType,
+        trainerPlaces: List<Place>
+    )
+
+    suspend fun saveNewUser(
+        userUid: String,
+        name: String,
+        surname: String,
+        birthDate: Instant,
+        accountType: AccountType
+    )
 }
 
 class UserRepositoryImpl(private val firebaseAuth: Flow<FirebaseUser?> = Firebase.auth.authStateChanged) :
@@ -54,6 +74,52 @@ class UserRepositoryImpl(private val firebaseAuth: Flow<FirebaseUser?> = Firebas
             userUid,
             getUser(userUid)
                 .copy(name = name, surname = surname)
+        )
+    }
+
+    override suspend fun saveNewTrainerUser(
+        userUid: String,
+        name: String,
+        surname: String,
+        birthDate: Instant,
+        accountType: AccountType,
+        trainerPlaces: List<Place>
+    ) {
+        val user = getUser(userUid)
+            .copy(
+                name = name,
+                surname = surname,
+                birthDate = birthDate,
+                accountType = accountType,
+                needOnBoard = false,
+                trainerPlaces = trainerPlaces
+            )
+
+        setUser(
+            userUid,
+            user
+        )
+    }
+
+    override suspend fun saveNewUser(
+        userUid: String,
+        name: String,
+        surname: String,
+        birthDate: Instant,
+        accountType: AccountType
+    ) {
+        val user = getUser(userUid)
+            .copy(
+                name = name,
+                surname = surname,
+                birthDate = birthDate,
+                accountType = accountType,
+                needOnBoard = false
+            )
+
+        setUser(
+            userUid,
+            user
         )
     }
 
