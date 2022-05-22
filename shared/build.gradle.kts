@@ -1,7 +1,7 @@
 import com.codingfeline.buildkonfig.compiler.FieldSpec.Type.STRING
 import java.util.*
 
-val ktorfitVersion = "1.0.0-beta04"
+val ktorfitVersion = "1.0.0-beta06"
 
 val localProperties = Properties()
 localProperties.load(project.rootProject.file("local.properties").inputStream())
@@ -23,8 +23,8 @@ version = "1.0"
 
 kotlin {
     android()
-    ios()
-    iosSimulatorArm64()
+//    ios()
+//    iosSimulatorArm64()
 
     cocoapods {
         summary = "Some description for the Shared Module"
@@ -102,19 +102,19 @@ kotlin {
             }
         }
         val androidTest by getting
-        val iosMain by getting {
+//        val iosMain by getting {
+//
+//        }
+//        val iosTest by getting {
+//
+//        }
 
-        }
-        val iosTest by getting {
-
-        }
-
-        val iosSimulatorArm64Main by getting {
-            dependsOn(iosMain)
-        }
-        val iosSimulatorArm64Test by getting {
-            dependsOn(iosTest)
-        }
+//        val iosSimulatorArm64Main by getting {
+//            dependsOn(iosMain)
+//        }
+//        val iosSimulatorArm64Test by getting {
+//            dependsOn(iosTest)
+//        }
 
     }
 }
@@ -144,6 +144,6 @@ buildkonfig {
 dependencies {
     add("kspMetadata", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfitVersion")
     add("kspAndroid", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfitVersion")
-    add("kspIosX64", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfitVersion")
-    add("kspIosSimulatorArm64", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfitVersion")
+//    add("kspIosX64", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfitVersion")
+//    add("kspIosSimulatorArm64", "de.jensklingenberg.ktorfit:ktorfit-ksp:$ktorfitVersion")
 }
