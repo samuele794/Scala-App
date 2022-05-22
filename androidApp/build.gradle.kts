@@ -135,6 +135,8 @@ dependencies {
 
     implementation("com.google.maps.android:maps-compose:1.2.0")
 
+    implementation("com.airbnb.android:lottie-compose:5.1.1")
+
     // https://composedestinations.rafaelcosta.xyz/
     implementation("io.github.raamcosta.compose-destinations:core:1.5.2-beta")
     ksp("io.github.raamcosta.compose-destinations:ksp:1.5.2-beta")

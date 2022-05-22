@@ -21,9 +21,11 @@ import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.navigation.popUpTo
 import com.ramcosta.composedestinations.result.NavResult
 import com.ramcosta.composedestinations.result.ResultRecipient
 import dev.icerock.moko.resources.compose.stringResource
+import it.samuele794.scala.android.ui.destinations.OnBoardSavePageDestination
 import it.samuele794.scala.android.ui.destinations.TrainerLocationSearchPageDestination
 import it.samuele794.scala.android.ui.navigation.OnBoardingNavGraph
 import it.samuele794.scala.android.ui.theme.ScalaAppTheme
@@ -33,6 +35,7 @@ import it.samuele794.scala.resources.SharedRes
 import it.samuele794.scala.utils.toLatLng
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingVMI
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -93,8 +96,9 @@ fun TrainerLocationOperationPage(
                         Button(
                             modifier = Modifier.align(Alignment.Center),
                             onClick = {
-                                onBoardingVMI.saveAccount()
-//                                navigator.navigate()
+                                navigator.navigate(OnBoardSavePageDestination) {
+                                    popUpTo(OnBoardSavePageDestination) { inclusive = true }
+                                }
                             }
                         ) {
                             Text(text = stringResource(SharedRes.strings.next))
@@ -227,6 +231,9 @@ fun TrainerLocationOperationPagePreview() {
             onBoardingVMI = object : OnBoardingVMI {
                 override val uiState: StateFlow<OnBoardingViewModel.UserDataUI>
                     get() = MutableStateFlow(OnBoardingViewModel.UserDataUI())
+
+                override val accountCreateState: Flow<Boolean>
+                    get() = MutableStateFlow(false)
 
                 override fun updateName(name: String) = Unit
 

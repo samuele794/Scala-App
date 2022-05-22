@@ -7,6 +7,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
+import it.samuele794.scala.android.ui.destinations.HomePageDestination
 import it.samuele794.scala.android.ui.destinations.LoginPageDestination
 import it.samuele794.scala.android.ui.destinations.PersonalDataPageDestination
 import it.samuele794.scala.android.ui.destinations.SplashPageDestination
@@ -27,7 +28,9 @@ fun SplashPage(
     val navDirection by loginViewModel.navDirection.collectAsState()
     when (navDirection) {
         is LoginViewModel.NavDirection.Logged -> {
-            //TODO Navigate to Logged
+            navigator.navigate(HomePageDestination) {
+                popUpTo(SplashPageDestination) { inclusive = true }
+            }
         }
 
         is LoginViewModel.NavDirection.OnBoarding -> {

@@ -1,27 +1,26 @@
 package it.samuele794.scala.android.ui.onboarding
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavOptionsBuilder
+import com.airbnb.lottie.compose.*
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import it.samuele794.scala.android.R
+import com.ramcosta.composedestinations.navigation.popUpTo
+import it.samuele794.scala.android.ui.destinations.HomePageDestination
 import it.samuele794.scala.android.ui.destinations.OnBoardSavePageDestination
 import it.samuele794.scala.android.ui.navigation.OnBoardingNavGraph
 import it.samuele794.scala.android.ui.theme.ScalaAppTheme
 import it.samuele794.scala.model.AccountType
 import it.samuele794.scala.model.maps.Place
+import it.samuele794.scala.resources.SharedRes
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingVMI
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingViewModel
 import kotlinx.coroutines.flow.Flow
@@ -32,70 +31,49 @@ import kotlinx.datetime.LocalDate
 @OnBoardingNavGraph
 @Destination
 @Composable
-fun BodyDataPage(
+fun OnBoardSavePage(
     navigator: DestinationsNavigator,
     onBoardingViewModel: OnBoardingVMI
 ) {
 
-    val uiState by onBoardingViewModel.uiState.collectAsState()
+    val saveComplete by onBoardingViewModel.accountCreateState.collectAsState(initial = false)
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = uiState.height?.toString() ?: "",
-            label = {
-                Text(text = stringResource(id = R.string.height))
-            },
-            onValueChange = {
-                onBoardingViewModel.updateHeight(it)
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            trailingIcon = {
-                Text(text = stringResource(id = R.string.label_cm))
-            },
-            singleLine = true
-        )
+    val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(SharedRes.files.onboarding_loading.rawResId))
+    val progress by animateLottieCompositionAsState(
+        composition,
+        iterations = LottieConstants.IterateForever,
+        speed = 0.5F
+    )
 
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
-            value = uiState.weight ?: "",
-            label = {
-                Text(text = stringResource(id = R.string.weight))
-            },
-            onValueChange = {
-                onBoardingViewModel.updateWeight(it)
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            trailingIcon = {
-                Text(text = stringResource(id = R.string.label_kg))
-            }
-        )
+    LaunchedEffect(Unit) {
+        onBoardingViewModel.saveAccount()
+    }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Button(
-                onClick = {
-                    navigator.navigate(OnBoardSavePageDestination)
+    LaunchedEffect(saveComplete) {
+        if (saveComplete) {
+            navigator.navigate(HomePageDestination) {
+                popUpTo(OnBoardSavePageDestination) {
+                    inclusive = true
                 }
-            ) { Text(text = stringResource(id = R.string.next)) }
+            }
         }
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        LottieAnimation(
+            modifier = Modifier.align(Alignment.Center),
+            composition = composition,
+            progress = progress
+
+        )
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview
 @Composable
-fun BodyDataPagePreview() {
+fun OnBoardSavePagePreview() {
     ScalaAppTheme {
-        BodyDataPage(
+        OnBoardSavePage(
             navigator = object : DestinationsNavigator {
                 override fun clearBackStack(route: String): Boolean = true
 

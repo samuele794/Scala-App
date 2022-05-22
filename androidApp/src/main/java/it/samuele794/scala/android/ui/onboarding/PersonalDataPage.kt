@@ -25,9 +25,9 @@ import it.samuele794.scala.model.maps.Place
 import it.samuele794.scala.resources.SharedRes
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingVMI
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 
@@ -48,7 +48,7 @@ fun PersonalDataPage(
 
     val datePickerDialog = DatePickerDialog(context)
         .apply {
-            datePicker.maxDate = Clock.System.now().toEpochMilliseconds()
+            datePicker.maxDate = onBoardingViewModel.birthdayMinDate.toEpochMilliseconds()
             setOnDateSetListener { _, year, month, date ->
                 onBoardingViewModel.updateBirthDate(LocalDate(year, Month(month + 1), date))
             }
@@ -194,6 +194,9 @@ fun PersonalDataPagePreview() {
             onBoardingViewModel = object : OnBoardingVMI {
                 override val uiState: StateFlow<OnBoardingViewModel.UserDataUI>
                     get() = MutableStateFlow(OnBoardingViewModel.UserDataUI())
+
+                override val accountCreateState: Flow<Boolean>
+                    get() = MutableStateFlow(false)
 
                 override fun updateName(name: String) = Unit
 

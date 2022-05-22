@@ -7,14 +7,18 @@ import it.samuele794.scala.model.maps.Place
 import it.samuele794.scala.repository.UserRepository
 import it.samuele794.scala.viewmodel.base.ViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.atStartOfDayIn
+import kotlinx.datetime.*
 
 interface OnBoardingVMI {
     val uiState: StateFlow<OnBoardingViewModel.UserDataUI>
+    val accountCreateState: Flow<Boolean>
+
+    val birthdayMinDate
+        get() = Clock.System.now()
+            .minus(DateTimePeriod(years = 18), TimeZone.currentSystemDefault())
 
     fun updateName(name: String)
     fun updateSurname(surname: String)
@@ -40,6 +44,9 @@ class OnBoardingViewModel(
 
     private val mUiState = MutableStateFlow(UserDataUI())
     override val uiState = mUiState.asStateFlow()
+
+    private val mAccountCreateState = Channel<Boolean>()
+    override val accountCreateState = mAccountCreateState.receiveAsFlow()
 
     override fun updateName(name: String) {
         viewModelScope.launch {
@@ -166,6 +173,8 @@ class OnBoardingViewModel(
                             else -> Unit
 
                         }
+
+                        mAccountCreateState.send(true)
                     } else {
                         //TODO SHOW ERROR
                     }
