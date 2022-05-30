@@ -10,7 +10,8 @@ data class Place(
     val placeId: String,
     val placeName: String,
     val address: String,
-    val latLng: LatLng
+    val latLng: LatLng,
+    val geoHash: String
 ) : Parcelable
 
 @Parcelize

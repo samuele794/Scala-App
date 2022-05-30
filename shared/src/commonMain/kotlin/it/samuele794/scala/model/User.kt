@@ -1,6 +1,5 @@
 package it.samuele794.scala.model
 
-import it.samuele794.scala.model.maps.Place
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -18,5 +17,5 @@ data class User(
     @SerialName("needOnBoard")
     val needOnBoard: Boolean = true,
     @SerialName("trainerPlaces")
-    val trainerPlaces: List<Place> = emptyList()
+    val trainerPlaces: List<String> = emptyList()
 )

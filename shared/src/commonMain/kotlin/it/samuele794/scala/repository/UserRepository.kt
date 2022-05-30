@@ -38,7 +38,10 @@ interface UserRepository {
     )
 }
 
-class UserRepositoryImpl(private val firebaseAuth: Flow<FirebaseUser?> = Firebase.auth.authStateChanged) :
+class UserRepositoryImpl(
+    private val firebaseAuth: Flow<FirebaseUser?> = Firebase.auth.authStateChanged,
+    private val placeRepository: PlaceRepository
+) :
     UserRepository {
 
     override fun observeUserDocument(userUid: String): Flow<DocumentSnapshot> {
@@ -85,6 +88,11 @@ class UserRepositoryImpl(private val firebaseAuth: Flow<FirebaseUser?> = Firebas
         accountType: AccountType,
         trainerPlaces: List<Place>
     ) {
+        val placesRef = trainerPlaces.map {
+            placeRepository.addPlace(it)
+                .path
+        }
+
         val user = getUser(userUid)
             .copy(
                 name = name,
@@ -92,7 +100,7 @@ class UserRepositoryImpl(private val firebaseAuth: Flow<FirebaseUser?> = Firebas
                 birthDate = birthDate,
                 accountType = accountType,
                 needOnBoard = false,
-                trainerPlaces = trainerPlaces
+                trainerPlaces = placesRef
             )
 
         setUser(
@@ -133,10 +141,10 @@ class UserRepositoryImpl(private val firebaseAuth: Flow<FirebaseUser?> = Firebas
         return Firebase.firestore.collection(USER_COLLECTION)
             .document(userUid)
             .get()
-            .data()
+            .data(User.serializer())
     }
 
     companion object {
-        private const val USER_COLLECTION = "users"
+        const val USER_COLLECTION = "users"
     }
 }

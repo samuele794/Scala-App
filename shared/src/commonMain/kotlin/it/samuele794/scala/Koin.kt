@@ -10,9 +10,7 @@ import io.ktor.client.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import it.samuele794.scala.api.maps.GoogleMapsApi
-import it.samuele794.scala.repository.GoogleMapsRepository
-import it.samuele794.scala.repository.UserRepository
-import it.samuele794.scala.repository.UserRepositoryImpl
+import it.samuele794.scala.repository.*
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import org.koin.core.KoinApplication
@@ -90,7 +88,11 @@ private val coreModule = module {
     }
 
     single<UserRepository> {
-        UserRepositoryImpl()
+        UserRepositoryImpl(placeRepository = get())
+    }
+
+    single<PlaceRepository> {
+        PlaceRepositoryImpl()
     }
 
     single {
