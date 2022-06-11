@@ -119,7 +119,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.1.1")
     debugImplementation("androidx.compose.ui:ui-tooling:1.1.1")
 
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.0")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
     implementation("io.insert-koin:koin-android:3.1.6")
     implementation("io.insert-koin:koin-androidx-compose:3.1.6")
@@ -131,13 +131,13 @@ dependencies {
     implementation("com.google.firebase:firebase-crashlytics-ktx")
 
     // Also declare the dependency for the Google Play services library and specify its version
-    implementation("com.google.android.gms:play-services-auth:20.1.0")
+    implementation("com.google.android.gms:play-services-auth:20.2.0")
 
-    implementation("com.google.maps.android:maps-compose:1.2.0")
+    implementation("com.google.maps.android:maps-compose:2.1.1")
 
     implementation("com.airbnb.android:lottie-compose:5.1.1")
 
     // https://composedestinations.rafaelcosta.xyz/
-    implementation("io.github.raamcosta.compose-destinations:core:1.5.2-beta")
-    ksp("io.github.raamcosta.compose-destinations:ksp:1.5.2-beta")
+    implementation("io.github.raamcosta.compose-destinations:core:1.5.8-beta")
+    ksp("io.github.raamcosta.compose-destinations:ksp:1.5.8-beta")
 }

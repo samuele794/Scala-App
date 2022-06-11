@@ -15,6 +15,8 @@ import it.samuele794.scala.android.ui.NavGraphs
 import it.samuele794.scala.android.ui.theme.ScalaAppTheme
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingVMI
 import it.samuele794.scala.viewmodel.onboarding.OnBoardingViewModel
+import it.samuele794.scala.viewmodel.search.TrainerSearchVMI
+import it.samuele794.scala.viewmodel.search.TrainerSearchViewModel
 import org.koin.androidx.compose.getViewModel
 
 
@@ -37,6 +39,8 @@ class MainActivity : ComponentActivity() {
                                 }
                                 dependency(getViewModel<OnBoardingViewModel>(owner = parentEntry) as OnBoardingVMI)
                             }
+
+                            dependency(getViewModel<TrainerSearchViewModel>() as TrainerSearchVMI)
                         }
                     )
                 }
