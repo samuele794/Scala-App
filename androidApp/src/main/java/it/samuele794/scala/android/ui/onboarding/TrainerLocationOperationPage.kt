@@ -15,10 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavOptionsBuilder
 import com.google.android.gms.maps.model.CameraPosition
-import com.google.maps.android.compose.CameraPositionState
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.MapUiSettings
-import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.*
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.ramcosta.composedestinations.navigation.popUpTo
@@ -150,7 +147,7 @@ fun PlaceBottomSheet(showCasePlace: Place?) {
                 )
             ) {
                 Marker(
-                    position = showCasePlace.latLng.toLatLng(),
+                    state = rememberMarkerState(position = showCasePlace.latLng.toLatLng()),
                     title = showCasePlace.placeName
                 )
             }

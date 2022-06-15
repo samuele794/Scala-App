@@ -1,6 +1,7 @@
 package it.samuele794.scala.viewmodel.search
 
 import it.samuele794.scala.model.maps.LatLng
+import it.samuele794.scala.model.maps.Place
 import it.samuele794.scala.repository.PlaceRepository
 import it.samuele794.scala.viewmodel.base.ViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,13 +33,17 @@ class TrainerSearchViewModel(private val placeRepository: PlaceRepository) : Vie
 
     override fun searchTrainer(center: LatLng) {
         viewModelScope.launch(Dispatchers.Default) {
-            placeRepository.getPlacesByBounds(center)
+            val placesResult = placeRepository.getPlacesByBounds(center)
+            mUiState.emit(
+                uiState.value.copy(placesResult = placesResult)
+            )
         }
     }
 
 
     data class TrainerSearchUI(
         val circleRange: Float = 1F,
+        val placesResult: List<Place> = emptyList()
     )
 
 }

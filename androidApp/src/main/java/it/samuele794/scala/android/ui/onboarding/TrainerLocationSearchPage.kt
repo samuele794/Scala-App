@@ -23,11 +23,11 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.result.ResultBackNavigator
 import it.samuele794.scala.android.ui.navigation.OnBoardingNavGraph
 import it.samuele794.scala.android.ui.theme.ScalaAppTheme
-import it.samuele794.scala.model.maps.LatLng
 import it.samuele794.scala.model.maps.Place
 import it.samuele794.scala.resources.SharedRes
 import it.samuele794.scala.utils.toLatLng
@@ -86,7 +86,9 @@ fun TrainerLocationSearchPage(
                 cameraPositionState = cameraPositionState
             ) {
                 if (placeSelected != null) {
-                    Marker(position = placeSelected.latLng.toLatLng())
+                    Marker(
+                        state = rememberMarkerState(position = placeSelected.latLng.toLatLng()),
+                    )
                 }
             }
         }
@@ -186,16 +188,17 @@ fun SearchFieldPreview() {
         SearchField(
             modifier = Modifier,
             searchAddressResult = buildList {
-                repeat(20) {
-                    add(
-                        Place(
-                            "abc",
-                            "Cia Come Sta",
-                            "Via Di Quack",
-                            LatLng(20.0, 9.0)
-                        )
-                    )
-                }
+//                repeat(20) {
+//                    add(
+//                        Place(
+//                            "abc",
+//                            "Cia Come Sta",
+//                            "Via Di Quack",
+//                            LatLng(20.0, 9.0),
+//
+//                        )
+//                    )
+//                }
             },
             searchTerm = text,
             onTextUpdated = {

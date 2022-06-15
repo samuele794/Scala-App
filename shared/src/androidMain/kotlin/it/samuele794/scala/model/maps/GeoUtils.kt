@@ -12,3 +12,7 @@ actual fun getGeoHashQueryBounds(center: LatLng, radius: Double): List<GeoQueryB
         GeoQueryBounds(it.startHash, it.endHash)
     }
 }
+
+actual fun getDistanceBetween(a: LatLng, b: LatLng): Double {
+    return GeoFireUtils.getDistanceBetween(GeoLocation(a.lat, a.lng), GeoLocation(b.lat, b.lng))
+}
